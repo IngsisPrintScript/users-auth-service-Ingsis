@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+./gradlew -q spotlessApply
+git add -A
+echo "[pre-commit] formatted with Spotless and staged."
