@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthController {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+  @Autowired
+  public AuthController(AuthService authService) {
+    this.authService = authService;
+  }
 
-    @GetMapping("/users/exists/{userId}")
-    public boolean userExists(@PathVariable String userId) {
-        return authService.userExists(userId);
-    }
+  @GetMapping("/users/exists/{userId}")
+  public boolean userExists(@PathVariable String userId) {
+    return authService.userExists(userId);
+  }
 }
