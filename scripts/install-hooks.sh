@@ -1,12 +1,6 @@
-#!/bin/sh
-# ./scripts/install-hooks.sh
+#!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p .git/hooks
-
-cp .github/hooks/pre-commit .git/hooks/pre-commit
-cp .github/hooks/post-commit .git/hooks/post-commit
-
-chmod +x .git/hooks/pre-commit
-chmod +x .git/hooks/post-commit
-
-echo "Hooks instalados"
+git config core.hooksPath .githooks
+chmod +x .githooks/pre-commit .githooks/pre-push
+echo "[hooks] Installed git hooks from .githooks"
