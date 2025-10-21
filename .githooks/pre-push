@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Ensure code is formatted before pushing. Use spotlessCheck so push fails when formatting is required
+./gradlew -q spotlessCheck
+
+# Run tests after formatting check
 ./gradlew test
-echo "[pre-push] Tests OK."
+
+echo "[pre-push] Spotless check and tests OK."
