@@ -1,12 +1,13 @@
-#!/bin/sh
-# ./scripts/install-hooks.sh
+#!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p .git/hooks
+if ! command -v git >/dev/null 2>&1; then
+	echo "git not found in PATH. Please install git and try again." >&2
+	exit 1
+fi
 
-cp .github/hooks/pre-commit .git/hooks/pre-commit
-cp .github/hooks/post-commit .git/hooks/post-commit
+git config core.hooksPath .githooks
+chmod +x .githooks/pre-commit .githooks/pre-push || true
 
-chmod +x .git/hooks/pre-commit
-chmod +x .git/hooks/post-commit
-
-echo "Hooks instalados"
+echo "[hooks] Installed git hooks from .githooks"
+echo "Run 'git config --get core.hooksPath' to verify. To uninstall: 'git config --unset core.hooksPath'"
