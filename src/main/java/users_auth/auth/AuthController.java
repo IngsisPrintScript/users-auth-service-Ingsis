@@ -1,10 +1,9 @@
 package users_auth.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import users_auth.dto.UserResult;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -18,12 +17,12 @@ public class AuthController {
   }
 
     @GetMapping("/users/exists/{userId}")
-    public boolean userExists(@PathVariable String userId) {
-        return authService.userExists(userId);
+    public boolean userExists(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
+        return authService.userExists(userId,jwt.toString());
     }
 
     @GetMapping("/find")
-    public List<UserResult> findUser(@RequestParam String search) {
-        return authService.search(search);
+    public String findUserName(@AuthenticationPrincipal Jwt jwt, @RequestParam String userID) {
+        return authService.getUserById(userID, jwt.getTokenValue()).name();
     }
 }

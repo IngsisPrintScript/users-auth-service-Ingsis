@@ -17,3 +17,15 @@ spring:
         jwt:
           issuer-uri: ${AUTH0_ISSUER_URI}
           audience: ${AUTH0_AUDIENCE}
+
+
+okta:
+  oauth2:
+    # Replace with the domain of your Auth0 tenant.
+    issuer: ${AUTH0_ISSUER_URI}
+    # Replace with the API Identifier for your Auth0 API.
+    audience: ${AUTH0_AUDIENCE}
+
+server:
+  port: 8089
+  address: 0.0.0.0
