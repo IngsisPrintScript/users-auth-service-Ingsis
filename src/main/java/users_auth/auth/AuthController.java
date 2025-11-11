@@ -16,13 +16,13 @@ public class AuthController {
     this.authService = authService;
   }
 
-    @GetMapping("/users/exists/{userId}")
-    public boolean userExists(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
-        return authService.userExists(userId,jwt.toString());
-    }
+  @GetMapping("/users/exists/{userId}")
+  public boolean userExists(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
+    return authService.userExists(userId);
+  }
 
-    @GetMapping("/find")
-    public String findUserName(@AuthenticationPrincipal Jwt jwt, @RequestParam String userID) {
-        return authService.getUserById(userID, jwt.getTokenValue()).name();
-    }
+  @GetMapping("/users/name")
+  public String findUserName(@AuthenticationPrincipal Jwt jwt ,@RequestParam String userId) {
+    return authService.getUserById(userId).name();
+  }
 }
