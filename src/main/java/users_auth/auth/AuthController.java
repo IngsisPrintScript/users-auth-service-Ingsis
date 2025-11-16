@@ -22,7 +22,7 @@ public class AuthController {
   }
 
   @GetMapping("/users/name")
-  public String findUserName(@AuthenticationPrincipal Jwt jwt ,@RequestParam String userId) {
+  public String findUserName(@AuthenticationPrincipal Jwt jwt, @RequestParam String userId) {
     return authService.getUserById(userId).name();
   }
 }
