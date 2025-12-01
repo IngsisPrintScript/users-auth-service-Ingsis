@@ -44,6 +44,18 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register("installGitHooks") {
+    doLast {
+        exec {
+            commandLine "sh", "./scripts/install-hooks.sh"
+        }
+    }
+}
+
+tasks.named("build") {
+    dependsOn("installGitHooks")
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 	finalizedBy tasks.jacocoTestReport
