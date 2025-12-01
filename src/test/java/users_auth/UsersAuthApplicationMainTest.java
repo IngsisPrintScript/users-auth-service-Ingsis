@@ -8,11 +8,11 @@ import org.springframework.boot.SpringApplication;
 
 class UsersAuthApplicationMainTest {
 
-  @Test
-  void main_callsSpringApplicationRun() {
-    try (MockedStatic<SpringApplication> mocked = mockStatic(SpringApplication.class)) {
-      UsersAuthApplication.main(new String[] {});
-      mocked.verify(() -> SpringApplication.run(UsersAuthApplication.class, new String[] {}));
+    @Test
+    void main_callsSpringApplicationRun() {
+        try (MockedStatic<SpringApplication> mocked = mockStatic(SpringApplication.class)) {
+            UsersAuthApplication.main(new String[]{});
+            mocked.verify(() -> SpringApplication.run(UsersAuthApplication.class, new String[]{}));
+        }
     }
-  }
 }

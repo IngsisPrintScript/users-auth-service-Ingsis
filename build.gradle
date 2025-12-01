@@ -46,12 +46,17 @@ dependencies {
 
 tasks.register("installGitHooks") {
     doLast {
-        exec {
-            commandLine "sh", "./scripts/install-hooks.sh"
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            exec {
+                commandLine "bash", "./scripts/install-hooks.sh"
+            }
+        } else {
+            exec {
+                commandLine "sh", "./scripts/install-hooks.sh"
+            }
         }
     }
 }
-
 tasks.named("build") {
     dependsOn("installGitHooks")
 }
