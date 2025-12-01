@@ -5,6 +5,7 @@ plugins {
 	id 'jacoco'
 	id 'checkstyle'
 	id 'com.diffplug.spotless' version '6.25.0'
+    id 'maven-publish'
 }
 
 group = 'users-auth'
@@ -18,7 +19,15 @@ java {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/austral-ingsis/*")
+        credentials {
+            username = findProperty("gpr.user")
+            password = findProperty("gpr.key")
+        }
+    }
 }
 
 dependencies {
@@ -53,14 +62,15 @@ jacocoTestReport {
 }
 
 spotless {
-	java {
-		googleJavaFormat()
-		target 'src/**/*.java'
-		indentWithSpaces(4)
-	}
+    java {
+        target 'src/**/*.java'
+        eclipse().configFile("config/eclipse-java-style.xml")
+        importOrder()
+        removeUnusedImports()
+        lineEndings = 'UNIX'
+    }
 }
-
 checkstyle {
-	toolVersion = '10.12.0'
-	configFile = file("config/checkstyle/checkstyle.xml") //Reemplazar por nuestras checkstyles
+    toolVersion = '10.12.0'
+    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
 }

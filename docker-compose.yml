@@ -12,17 +12,25 @@ services:
       - .env
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - snippet-net
 
-  snippet-service:
+  authentication-service:
     build: .
-    container_name: user-auth-service
+    container_name: authentication-service
     ports:
       - "${API_PORT}:8089"
     env_file:
       - .env
     depends_on:
       - db
+    networks:
+      - snippet-net
 
 volumes:
   db:
   gradle-cache:
+
+networks:
+  snippet-net:
+    external: true
