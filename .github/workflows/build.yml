@@ -71,4 +71,5 @@ jobs:
           script: |
             cd /home/MackyAlimena/infra-ingsis
             docker pull ghcr.io/ingsisprintscript/users-authentication:dev
-            docker compose -f docker-compose.dev.yml up -d authentication-service
+            docker compose -f docker-compose.dev.yml up -d authentication
+
