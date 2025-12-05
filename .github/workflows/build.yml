@@ -57,7 +57,18 @@ jobs:
           docker build \
             --build-arg GITHUB_USER=${{ github.actor }} \
             --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-            -t ghcr.io/ingsisprintscript/users-authorization:dev .
+            -t ghcr.io/ingsisprintscript/users-authentication:dev .
 
       - name: Push Docker image
-        run: docker push ghcr.io/ingsisprintscript/users-authorization:dev
+        run: docker push ghcr.io/ingsisprintscript/users-authentication:dev
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/MackyAlimena/infra-ingsis
+            docker pull ghcr.io/ingsisprintscript/users-authentication:dev
+            docker compose -f docker-compose.dev.yml up -d authentication-service
