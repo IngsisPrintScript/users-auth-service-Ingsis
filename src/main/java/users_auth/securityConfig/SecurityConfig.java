@@ -3,6 +3,8 @@ package users_auth.securityConfig;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,9 +44,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"));
+                Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173","https://snippet-dev.duckdns.org","https://snippet-prod.duckdns.org"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
 
