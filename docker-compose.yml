@@ -1,23 +1,14 @@
 services:
-  authentication-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        GITHUB_USER: ${GITHUB_USER}
-        GITHUB_TOKEN: ${GITHUB_TOKEN}
-    container_name: authentication-service
+  db:
+    image: postgres:alpine
+    container_name: auth-db
     ports:
-      - "${API_PORT}:8085"
+      - "${DATABASE_PORT}:5432"
     env_file:
       - .env
-    networks:
-      - snippet-net
+    volumes:
+      - db:/var/lib/postgresql/data
 
 volumes:
   db:
   gradle-cache:
-
-networks:
-  snippet-net:
-    external: true
