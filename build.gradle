@@ -66,9 +66,9 @@ tasks.named('test') {
 	finalizedBy tasks.jacocoTestReport
 }
 
-jacoco {
-	toolVersion = "0.8.10"
-}
+//jacoco {
+//	toolVersion = "0.8.10"
+//}
 
 jacocoTestReport {
 	dependsOn tasks.test
