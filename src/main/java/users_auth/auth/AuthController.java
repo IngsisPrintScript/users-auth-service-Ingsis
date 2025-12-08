@@ -29,11 +29,28 @@ public class AuthController {
 
     @GetMapping("/users/name")
     public String findUserName(@AuthenticationPrincipal Jwt jwt, @RequestParam String userId) {
-        return authService.getUserById(userId).name();
+        try {
+            UserResult userResult = authService.getUserById(userId);
+            if (userResult == null) {
+                return "Unknown";
+            }
+            return userResult.name();
+        } catch (Exception e) {
+            return "Unknown";
+        }
     }
 
     @GetMapping("/users")
-    public List<UserResult> getFriends(@AuthenticationPrincipal Jwt jwt, @RequestParam String name) {
-        return authService.getUsersByName(name);
+    public List<UserResult> getFriends(@AuthenticationPrincipal Jwt jwt, 
+            @RequestParam(required = false, defaultValue = "") String name) {
+        try {
+            if (name == null || name.trim().isEmpty()) {
+                return List.of();
+            }
+            
+            return authService.getUsersByName(name);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }
