@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import users_auth.dto.PaginatedUsersDTO;
+import users_auth.dto.PaginatedUsers;
 import users_auth.dto.UserResult;
 
 @Service
@@ -127,7 +127,7 @@ public class AuthService {
         }
     }
 
-    public PaginatedUsersDTO getUsers(String name, int page, int pageSize) {
+    public PaginatedUsers getUsers(String name, int page, int pageSize) {
         List<UserResult> allUsers;
         if (name == null || name.isBlank()) {
             allUsers = getUsersByName("*");
@@ -138,15 +138,10 @@ public class AuthService {
         int total = allUsers.size();
         int fromIndex = Math.max(0, page * pageSize);
         if (fromIndex >= total) {
-            return new PaginatedUsersDTO(page, pageSize, total, List.of());
+            return new PaginatedUsers(page, pageSize, total, List.of());
         }
         int toIndex = Math.min(fromIndex + pageSize, total);
         List<UserResult> paginated = allUsers.subList(fromIndex, toIndex);
-        return new PaginatedUsersDTO(
-                page,
-                pageSize,
-                total,
-                paginated
-        );
+        return new PaginatedUsers(page, pageSize, total, paginated);
     }
 }
