@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import users_auth.dto.PaginatedUsers;
 
-
 @RestController
 @RequestMapping
 public class AuthController {
@@ -35,8 +34,8 @@ public class AuthController {
 
     @GetMapping("/users")
     public ResponseEntity<PaginatedUsers> getUsers(@AuthenticationPrincipal Jwt jwt,
-                                                   @RequestParam(required = false) String name, @RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(name = "page_size", defaultValue = "10") int pageSize) {
+            @RequestParam(required = false) String name, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(name = "page_size", defaultValue = "10") int pageSize) {
         PaginatedUsers result = authService.getUsers(name, page, pageSize);
         return ResponseEntity.ok(result);
     }
