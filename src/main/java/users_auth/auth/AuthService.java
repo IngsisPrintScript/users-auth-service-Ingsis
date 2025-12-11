@@ -73,8 +73,7 @@ public class AuthService {
 
     public List<UserResult> getUsersByName(String name) {
         String token = getManagementToken();
-        String url = String.format("https://%s/api/v2/users?q=name:\"%s\"&search_engine=v3", domain, name);
-
+        String url = String.format("https://%s/api/v2/users?per_page=100&page=0", domain);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -85,15 +84,24 @@ public class AuthService {
             ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, request, List.class);
 
             List<Map<String, Object>> rawUsers = response.getBody();
-            if (rawUsers == null)
+            if (rawUsers == null) {
                 return List.of();
+            }
 
             List<UserResult> results = new ArrayList<>();
+            String searchLower = name.toLowerCase().trim();
 
             for (Map<String, Object> user : rawUsers) {
-                results.add(new UserResult((String) user.get("user_id"),
-                        user.getOrDefault("name", user.getOrDefault("nickname", "Unknown")).toString()));
-            }
+                String userName = user.getOrDefault("name", user.getOrDefault("nickname", "Unknown")).toString();
+                String userNickname = user.getOrDefault("nickname", "").toString();
+                String userEmail = user.getOrDefault("email", "").toString();
+                boolean matches = userName.toLowerCase().contains(searchLower)
+                        || userNickname.toLowerCase().contains(searchLower)
+                        || userEmail.toLowerCase().contains(searchLower);
+                if (matches) {
+                    String userId = (String) user.get("user_id");
+                    results.add(new UserResult(userId, userName));
+                }}
 
             return results;
         } catch (HttpClientErrorException e) {
