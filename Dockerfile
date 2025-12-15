@@ -1,39 +1,35 @@
 # --- Stage 1: build the application ---
 FROM gradle:8.4-jdk21-alpine AS builder
-# (usa la imagen oficial de Gradle con JDK 21)
 
 WORKDIR /home/gradle/project
 
-# Copiar sólo los archivos necesarios para cachear dependencias
+# Cacheo dependencias
 COPY build.gradle settings.gradle gradlew gradle /home/gradle/project/
+RUN chmod +x gradlew && ./gradlew --no-daemon assemble -x test || true
 
-# Descargar dependencias usando el wrapper
-RUN chmod +x gradlew && ./gradlew --no-daemon assemble -x test || return 0
-
-# Copiar el resto del código
+# Código
 COPY . /home/gradle/project
 
-# Build real, generando el .jar usando el wrapper
-RUN chmod +x gradlew && ./gradlew --no-daemon clean bootJar
+# Build + New Relic
+RUN chmod +x gradlew && ./gradlew --no-daemon clean bootJar unzipNewRelic -x test
 
-# --- Stage 2: run the application ---
+
+# --- Stage 2: runtime ---
 FROM eclipse-temurin:21-jre-alpine
-# (imagen base JRE 21 liviana)
 
-# Crear directorio
 WORKDIR /app
 
-# Copiar el jar desde el stage anterior
+# App
 COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 
-# Copiamos TODO el build y buscamos New Relic dinámicamente
-COPY --from=builder /home/gradle/project/build/ /tmp/build/
-
-RUN find /tmp/build -name "newrelic.jar" -exec cp {} /app/newrelic.jar \; \
- && find /tmp/build -name "newrelic.yml" -exec cp {} /app/newrelic.yml \;
+# New Relic (paths exactos)
+RUN mkdir -p /app/newrelic
+COPY --from=builder /home/gradle/project/build/newrelic/newrelic/newrelic.jar /app/newrelic/newrelic.jar
+COPY --from=builder /home/gradle/project/build/newrelic/newrelic/newrelic.yml /app/newrelic/newrelic.yml
 
 ENV JAVA_OPTS=""
+ENV NEW_RELIC_LOG=stdout
+
 EXPOSE 8085
 
-
-ENTRYPOINT ["sh", "-c", "java -javaagent:/app/newrelic.jar $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -javaagent:/app/newrelic/newrelic.jar $JAVA_OPTS -jar app.jar"]

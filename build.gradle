@@ -60,6 +60,10 @@ tasks.register("unzipNewRelic", Copy) {
     into "$buildDir/newrelic"
 }
 
+tasks.named("bootJar") {
+    dependsOn unzipNewRelic
+}
+
 /* =======================
    Testing / Coverage
    ======================= */
