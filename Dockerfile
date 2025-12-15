@@ -1,27 +1,30 @@
-# --- Stage 1: build the application ---
+# --- Stage 1: build ---
 FROM gradle:8.4-jdk21-alpine AS builder
 
 WORKDIR /home/gradle/project
 
-COPY build.gradle settings.gradle gradlew gradle /home/gradle/project/
+# Copiamos TODO el proyecto de una
+COPY . .
 
-RUN gradle --no-daemon build -x test || return 0
+# Build real, sin ocultar errores
+RUN gradle --no-daemon clean bootJar unzipNewRelic -x test
 
-COPY . /home/gradle/project
 
-RUN gradle --no-daemon clean bootJar unzipNewRelic
-
-# --- Stage 2: run the application ---
+# --- Stage 2: runtime ---
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+# App
 COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
-COPY --from=builder /home/gradle/project/build/newrelic/newrelic.jar /app/newrelic.jar
-COPY --from=builder /home/gradle/project/build/newrelic/newrelic.yml /app/newrelic.yml
+
+# Copiamos TODO el build y buscamos New Relic dinámicamente
+COPY --from=builder /home/gradle/project/build/ /tmp/build/
+
+RUN find /tmp/build -name "newrelic.jar" -exec cp {} /app/newrelic.jar \; \
+ && find /tmp/build -name "newrelic.yml" -exec cp {} /app/newrelic.yml \;
 
 ENV JAVA_OPTS=""
-
 EXPOSE 8085
 
 ENTRYPOINT ["sh", "-c", "java -javaagent:/app/newrelic.jar $JAVA_OPTS -jar app.jar"]
