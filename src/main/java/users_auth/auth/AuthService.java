@@ -101,7 +101,8 @@ public class AuthService {
                 if (matches) {
                     String userId = (String) user.get("user_id");
                     results.add(new UserResult(userId, userName));
-                }}
+                }
+            }
 
             return results;
         } catch (HttpClientErrorException e) {
