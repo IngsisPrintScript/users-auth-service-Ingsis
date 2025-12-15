@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import users_auth.dto.PaginatedUsers;
+import users_auth.dto.UserResult;
 
 @RestController
 @RequestMapping
@@ -29,7 +30,15 @@ public class AuthController {
 
     @GetMapping("/users/{userId}")
     public String findUserName(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
-        return authService.getUserById(userId).name();
+        try {
+            UserResult userResult = authService.getUserById(userId);
+            if (userResult == null) {
+                return "Unknown";
+            }
+            return userResult.name();
+        } catch (Exception e) {
+            return "Unknown";
+        }
     }
 
     @GetMapping("/users")
