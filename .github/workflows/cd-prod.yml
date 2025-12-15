@@ -15,7 +15,7 @@ jobs:
     uses: IngsisPrintScript/workflows-and-actions/.github/workflows/deploy.yaml@main
     with:
       java-version: "21"
-      environment: "development"
+      environment: "production"
       service_name: "authentication"
       image_route: "ghcr.io/ingsisprintscript/users-authentication:prod"
     secrets: inherit
