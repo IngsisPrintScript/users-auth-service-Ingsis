@@ -1,11 +1,12 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.6'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'jacoco'
-	id 'checkstyle'
-	id 'com.diffplug.spotless' version '6.25.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'com.diffplug.spotless' version '6.25.0'
     id 'maven-publish'
+    id 'de.undercouch.download' version '5.3.0'
 }
 
 group = 'users-auth'
@@ -13,9 +14,9 @@ version = '0.0.1-SNAPSHOT'
 description = 'Authorization with Auth0'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -31,50 +32,54 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
-	runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'com.h2database:h2'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.h2database:h2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.register("installGitHooks") {
-    onlyIf {
-        !System.getProperty("os.name").toLowerCase().contains("win")
-    }
+/* =======================
+   New Relic Java Agent
+   ======================= */
 
-    doLast {
-        exec {
-            commandLine "sh", "./scripts/install-hooks.sh"
-        }
-    }
+tasks.register("downloadNewRelic", Download) {
+    src "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip"
+    dest file("$buildDir/newrelic/newrelic-java.zip")
 }
-tasks.named("build") {
-    dependsOn("installGitHooks")
+
+tasks.register("unzipNewRelic", Copy) {
+    dependsOn "downloadNewRelic"
+    from zipTree("$buildDir/newrelic/newrelic-java.zip")
+    into "$buildDir/newrelic"
 }
+
+/* =======================
+   Testing / Coverage
+   ======================= */
 
 tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy tasks.jacocoTestReport
+    useJUnitPlatform()
+    finalizedBy tasks.jacocoTestReport
 }
-
-//jacoco {
-//	toolVersion = "0.8.10"
-//}
 
 jacocoTestReport {
-	dependsOn tasks.test
-	reports {
-		xml.required = true
-		html.required = true
-	}
+    dependsOn tasks.test
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
+
+/* =======================
+   Quality tools
+   ======================= */
 
 spotless {
     java {
@@ -85,6 +90,7 @@ spotless {
         lineEndings = 'UNIX'
     }
 }
+
 checkstyle {
     toolVersion = '10.12.0'
     configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
