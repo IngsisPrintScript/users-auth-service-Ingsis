@@ -48,4 +48,5 @@ public class AuthController {
         PaginatedUsers result = authService.getUsers(name, page, pageSize);
         return ResponseEntity.ok(result);
     }
+
 }
